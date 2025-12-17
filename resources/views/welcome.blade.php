@@ -3,12 +3,235 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>Laravel</title>
-
-        <!-- Fonts -->
+        <title>Mitus Stationery - Toko Alat Tulis Online</title>
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <style>
+            .gradient-text {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .hero-gradient {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            }
+            .feature-card {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .feature-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+    </head>
+    <body class="font-sans antialiased dark:bg-black dark:text-white/50">
+        <div class="bg-white dark:bg-black">
+            <!-- Navigation -->
+            <nav class="fixed w-full top-0 z-50 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">📚</span>
+                            <span class="font-bold text-xl text-gray-900 dark:text-white">Mitus Stationery</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            @if (Route::has('login'))
+                                @auth
+                                    <a href="{{ url('/dashboard') }}" class="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition">
+                                        Dashboard
+                                    </a>
+                                @else
+                                    <a href="{{ route('login') }}" class="px-4 py-2 rounded-lg text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900 transition">
+                                        Login
+                                    </a>
+                                    @if (Route::has('register'))
+                                        <a href="{{ route('register') }}" class="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition">
+                                            Register
+                                        </a>
+                                    @endif
+                                @endauth
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Hero Section -->
+            <div class="pt-32 pb-20 hero-gradient">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                        <span class="gradient-text">Toko Alat Tulis</span>
+                        <span class="text-gray-900 dark:text-white"> Terlengkap</span>
+                    </h1>
+                    <p class="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+                        Temukan semua kebutuhan alat tulis Anda dengan harga terbaik dan kualitas terjamin. Belanja sekarang dan nikmati pengiriman cepat!
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="{{ route('products.index') }}" class="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition font-semibold">
+                            🛍️ Jelajahi Produk
+                        </a>
+                        @guest
+                            <a href="{{ route('register') }}" class="px-8 py-4 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 dark:hover:bg-gray-900 transition font-semibold">
+                                📝 Daftar Sekarang
+                            </a>
+                        @endguest
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="py-20 bg-gray-50 dark:bg-gray-900">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+                        Mengapa Memilih Kami?
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Feature 1 -->
+                        <div class="feature-card bg-white dark:bg-gray-800 rounded-xl p-8 shadow-md">
+                            <div class="text-4xl mb-4">✨</div>
+                            <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Produk Berkualitas</h3>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                Semua produk kami pilihan terbaik dengan jaminan kualitas dan keaslian.
+                            </p>
+                        </div>
+
+                        <!-- Feature 2 -->
+                        <div class="feature-card bg-white dark:bg-gray-800 rounded-xl p-8 shadow-md">
+                            <div class="text-4xl mb-4">🚀</div>
+                            <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Pengiriman Cepat</h3>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                Pesanan dikirim dengan cepat dan aman langsung ke rumah Anda.
+                            </p>
+                        </div>
+
+                        <!-- Feature 3 -->
+                        <div class="feature-card bg-white dark:bg-gray-800 rounded-xl p-8 shadow-md">
+                            <div class="text-4xl mb-4">💰</div>
+                            <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Harga Terjangkau</h3>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                Dapatkan harga terbaik dengan berbagai promosi dan diskon menarik.
+                            </p>
+                        </div>
+
+                        <!-- Feature 4 -->
+                        <div class="feature-card bg-white dark:bg-gray-800 rounded-xl p-8 shadow-md">
+                            <div class="text-4xl mb-4">🛡️</div>
+                            <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Aman Terjamin</h3>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                Transaksi aman dengan berbagai metode pembayaran terpercaya.
+                            </p>
+                        </div>
+
+                        <!-- Feature 5 -->
+                        <div class="feature-card bg-white dark:bg-gray-800 rounded-xl p-8 shadow-md">
+                            <div class="text-4xl mb-4">💬</div>
+                            <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Customer Support</h3>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                Tim support siap membantu Anda 24/7 untuk pertanyaan apapun.
+                            </p>
+                        </div>
+
+                        <!-- Feature 6 -->
+                        <div class="feature-card bg-white dark:bg-gray-800 rounded-xl p-8 shadow-md">
+                            <div class="text-4xl mb-4">⭐</div>
+                            <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Rating Terbaik</h3>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                Dipercaya oleh ribuan pelanggan dengan rating tinggi dan review positif.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Section -->
+            <div class="py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+                        Kategori Populer
+                    </h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        @php
+                            $categories = \App\Models\Product::distinct()->pluck('category')->take(8);
+                        @endphp
+                        @forelse($categories as $category)
+                            <div class="feature-card bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900 rounded-xl p-6 text-center">
+                                <div class="text-4xl mb-2">📦</div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white">{{ $category }}</h3>
+                            </div>
+                        @empty
+                            <div class="col-span-2 md:col-span-4 text-center text-gray-500">
+                                Kategori tidak tersedia
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="py-20 bg-gradient-to-r from-purple-600 to-blue-600">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 class="text-4xl font-bold text-white mb-6">
+                        Siap Mulai Belanja?
+                    </h2>
+                    <p class="text-xl text-white/80 mb-8">
+                        Jangan lewatkan kesempatan emas untuk mendapatkan alat tulis berkualitas dengan harga terbaik!
+                    </p>
+                    <a href="{{ route('products.index') }}" class="inline-block px-8 py-4 bg-white text-purple-600 rounded-lg hover:bg-gray-100 transition font-semibold">
+                        🛍️ Mulai Belanja Sekarang
+                    </a>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="bg-gray-900 text-white py-12">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                        <div>
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="text-2xl">📚</span>
+                                <span class="font-bold text-lg">Mitus Stationery</span>
+                            </div>
+                            <p class="text-gray-400">Toko alat tulis online terpercaya untuk semua kebutuhan Anda.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-4">Navigasi</h4>
+                            <ul class="space-y-2 text-gray-400">
+                                <li><a href="{{ route('products.index') }}" class="hover:text-white transition">Produk</a></li>
+                                <li><a href="{{ route('products.index') }}" class="hover:text-white transition">Kategori</a></li>
+                                <li><a href="{{ route('cart.index') }}" class="hover:text-white transition">Keranjang</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-4">Akun</h4>
+                            <ul class="space-y-2 text-gray-400">
+                                @auth
+                                    <li><a href="{{ route('dashboard') }}" class="hover:text-white transition">Dashboard</a></li>
+                                    <li><a href="{{ route('profile.edit') }}" class="hover:text-white transition">Profil</a></li>
+                                @else
+                                    <li><a href="{{ route('login') }}" class="hover:text-white transition">Login</a></li>
+                                    <li><a href="{{ route('register') }}" class="hover:text-white transition">Daftar</a></li>
+                                @endauth
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-4">Kontak</h4>
+                            <ul class="space-y-2 text-gray-400">
+                                <li>📞 +62 123 4567 8900</li>
+                                <li>📧 info@mitusstationery.com</li>
+                                <li>📍 Jakarta, Indonesia</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
+                        <p>© 2025 Mitus Stationery. Semua hak cipta dilindungi.</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </body>
+</html>
 
         <!-- Styles -->
         <style>
