@@ -33,6 +33,30 @@
             justify-content: center;
             font-size: 32px;
         }
+        .product-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        .product-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 35px -5px rgba(0, 0, 0, 0.15);
+        }
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .add-to-cart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        .add-to-cart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
     </style>
 
     <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-8 px-4 sm:px-6 lg:px-8">
@@ -41,10 +65,17 @@
             <div class="mb-8">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 class="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                            Selamat Datang, {{ Auth::user()->name }}! 👋
-                        </h1>
-                        <p class="text-slate-600 mt-2">Dashboard pelanggan - Kelola pesanan dan profil Anda</p>
+                        @if(Auth::check())
+                            <h1 class="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                                Selamat Datang, {{ Auth::user()->name }}! 👋
+                            </h1>
+                            <p class="text-slate-600 mt-2">Dashboard pelanggan - Lihat produk dan kelola pesanan Anda</p>
+                        @else
+                            <h1 class="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                                Katalog Produk 🛍️
+                            </h1>
+                            <p class="text-slate-600 mt-2">Jelajahi koleksi produk kami yang menarik - <a href="{{ route('login') }}" class="font-bold text-blue-600 hover:text-blue-700">Login untuk checkout</a></p>
+                        @endif
                     </div>
                     <div class="text-right">
                         <p class="text-sm text-slate-500">{{ now()->translatedFormat('l, j F Y') }}</p>
@@ -52,7 +83,8 @@
                 </div>
             </div>
 
-            <!-- User Stats Grid -->
+            <!-- User Stats Grid - Hanya untuk yang login -->
+            @if(Auth::check())
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <!-- My Orders -->
                 <div class="glass-effect rounded-2xl p-6 card-hover">
@@ -93,10 +125,100 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             <!-- Main Content Grid -->
+            <div class="mb-8 w-full">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900">🛒 Belanja Produk</h2>
+                        @if(!Auth::check())
+                            <p class="text-slate-600 text-sm mt-1">Lihat koleksi produk kami - login untuk checkout</p>
+                        @else
+                            <p class="text-slate-600 text-sm mt-1">Pilih dan checkout produk langsung dari dashboard</p>
+                        @endif
+                    </div>
+                </div>
+
+                @php $products = \App\Models\Product::where('stock', '>', 0)->get(); @endphp
+                
+                @if($products->count() > 0)
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        @foreach($products as $product)
+                            <div class="glass-effect product-card overflow-hidden flex flex-col">
+                                <!-- Product Image -->
+                                <div class="relative bg-gradient-to-br from-slate-100 to-slate-200 h-48 flex items-center justify-center overflow-hidden">
+                                    @if($product->image)
+                                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="product-image">
+                                    @else
+                                        <div class="text-5xl">📦</div>
+                                    @endif
+                                    <div class="absolute top-2 right-2">
+                                        <span class="inline-block px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-bold rounded-full">
+                                            Stok: {{ $product->stock }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Product Info -->
+                                <div class="flex-1 p-4 flex flex-col">
+                                    <h3 class="text-lg font-bold text-slate-900 mb-1 line-clamp-2">{{ $product->name }}</h3>
+                                    <p class="text-slate-600 text-sm mb-3 line-clamp-2">{{ $product->description ?? 'Produk berkualitas' }}</p>
+                                    
+                                    <div class="flex items-baseline gap-2 mb-4">
+                                        <span class="text-2xl font-bold gradient-primary bg-clip-text text-transparent">
+                                            Rp{{ number_format($product->price, 0, ',', '.') }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Quick Add to Cart -->
+                                    @if(Auth::check())
+                                        <form action="{{ route('cart.add', $product->id) }}" method="POST" class="mt-auto">
+                                            @csrf
+                                            <div class="flex gap-2 mb-3">
+                                                <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" 
+                                                       class="w-20 px-2 py-2 border border-slate-300 rounded-lg text-center focus:outline-none focus:border-purple-500">
+                                                <button type="submit" class="flex-1 add-to-cart-btn text-white font-bold py-2 rounded-lg">
+                                                    Tambah 🛒
+                                                </button>
+                                            </div>
+                                        </form>
+                                    @else
+                                        <div class="mt-auto mb-3">
+                                            <a href="{{ route('login') }}" class="flex-1 w-full text-center add-to-cart-btn text-white font-bold py-2 rounded-lg block">
+                                                Login untuk Pesan
+                                            </a>
+                                        </div>
+                                    @endif
+
+                                    <!-- View Detail Button -->
+                                    <a href="{{ route('products.show', $product->id) }}" class="w-full text-center px-3 py-2 border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition">
+                                        Detail
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- View All Products -->
+                    <div class="text-center mt-8">
+                        <a href="{{ route('products.index') }}" class="inline-block px-8 py-3 gradient-primary text-white font-bold rounded-lg hover:shadow-lg transition">
+                            Lihat Semua Produk →
+                        </a>
+                    </div>
+                @else
+                    <div class="glass-effect rounded-2xl p-12 text-center">
+                        <p class="text-slate-600 text-lg mb-4">Tidak ada produk yang tersedia saat ini</p>
+                        <a href="{{ route('products.index') }}" class="inline-block px-6 py-2 gradient-primary text-white font-medium rounded-lg">
+                            Cek Halaman Produk
+                        </a>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Recent Orders Grid - Hanya untuk yang login -->
+            @if(Auth::check())
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <!-- My Recent Orders -->
                 <div class="lg:col-span-2">
                     <div class="glass-effect rounded-2xl p-6">
                         <div class="flex justify-between items-center mb-4">
@@ -159,19 +281,20 @@
                     <div class="glass-effect rounded-2xl p-6 h-full">
                         <h2 class="text-xl font-bold text-slate-900 mb-4">⚡ Aksi Cepat</h2>
                         <div class="space-y-3">
-                            <a href="{{ route('products.index') }}" class="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-slate-100 to-slate-50 hover:from-slate-200 hover:to-slate-100 transition">
-                                <span class="text-xl">🛍️</span>
-                                <span class="font-medium text-slate-900">Belanja</span>
-                            </a>
-                            <a href="{{ route('cart.index') }}" class="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-slate-100 to-slate-50 hover:from-slate-200 hover:to-slate-100 transition">
+                            <a href="{{ route('cart.index') }}" class="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-blue-100 to-blue-50 hover:from-blue-200 hover:to-blue-100 transition">
                                 <span class="text-xl">🛒</span>
                                 <span class="font-medium text-slate-900">Keranjang</span>
+                                @include('partials._cart_count')
                             </a>
-                            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-slate-100 to-slate-50 hover:from-slate-200 hover:to-slate-100 transition">
+                            <a href="{{ route('checkout') }}" class="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-green-100 to-green-50 hover:from-green-200 hover:to-green-100 transition">
+                                <span class="text-xl">💳</span>
+                                <span class="font-medium text-slate-900">Checkout</span>
+                            </a>
+                            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 transition">
                                 <span class="text-xl">⚙️</span>
                                 <span class="font-medium text-slate-900">Pengaturan</span>
                             </a>
-                            <a href="{{ route('home') }}" class="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-slate-100 to-slate-50 hover:from-slate-200 hover:to-slate-100 transition">
+                            <a href="{{ route('home') }}" class="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-orange-100 to-orange-50 hover:from-orange-200 hover:to-orange-100 transition">
                                 <span class="text-xl">🏪</span>
                                 <span class="font-medium text-slate-900">Toko Utama</span>
                             </a>
@@ -179,8 +302,10 @@
                     </div>
                 </div>
             </div>
+            @endif
 
-            <!-- Additional Sections -->
+            <!-- Additional Sections - Hanya untuk yang login -->
+            @if(Auth::check())
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Account Info -->
                 <div class="glass-effect rounded-2xl p-6">
@@ -229,6 +354,7 @@
                     </ul>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 </x-app-layout>

@@ -12,13 +12,13 @@ Route::get('/', [ProductController::class, 'index'])->name('home');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('products.show');
 
-Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/add/{id}', [CartController::class, 'add'])->middleware('auth')->name('cart.add');
+Route::get('/cart', [CartController::class, 'index'])->middleware('auth')->name('cart.index');
+Route::post('/cart/update/{id}', [CartController::class, 'update'])->middleware('auth')->name('cart.update');
+Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->middleware('auth')->name('cart.remove');
 
-Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
-Route::post('/order/place', [OrderController::class, 'place'])->name('order.place');
+Route::get('/checkout', [OrderController::class, 'checkout'])->middleware('auth')->name('checkout');
+Route::post('/order/place', [OrderController::class, 'place'])->middleware('auth')->name('order.place');
 
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -36,7 +36,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

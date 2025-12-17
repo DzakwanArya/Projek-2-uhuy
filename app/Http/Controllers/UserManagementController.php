@@ -45,7 +45,7 @@ class UserManagementController extends Controller
      */
     public function destroy(User $user)
     {
-        if ($user->id === auth()->id()) {
+        if ($user->id === auth()->user()->id) {
             return redirect()->back()->with('error', 'Anda tidak dapat menghapus akun sendiri');
         }
 
@@ -60,7 +60,7 @@ class UserManagementController extends Controller
      */
     public function toggleStatus(User $user)
     {
-        if ($user->id === auth()->id()) {
+        if ($user->id === auth()->user()->id) {
             return redirect()->back()->with('error', 'Anda tidak dapat menonaktifkan akun sendiri');
         }
 

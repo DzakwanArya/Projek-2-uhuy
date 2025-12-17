@@ -15,7 +15,7 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || !auth()->user()->isAdmin()) {
+        if (!auth()->user() || !auth()->user()->isAdmin()) {
             return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman admin.');
         }
 
